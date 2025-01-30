@@ -881,7 +881,6 @@ create_scht <- function(gene_counts,
   gene_counts <- val_result$gene_counts
   transcript_counts <- val_result$transcript_counts
   
-  # Step 0: Input validation
   if (verbose) {
     message(sprintf("Input validation complete. 
                     Gene counts matrix: %d rows x %d cols. 
