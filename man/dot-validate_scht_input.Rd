@@ -20,9 +20,9 @@
 
 \item{transcript_counts}{Transcript-level counts as matrix or data frame}
 
-\item{transcript_info}{Data frame with columns: transcript_id, transcript_name, gene_id, gene_name}
+\item{transcript_info}{Data frame with columns: transcript_id, transcript_name, gene_id, gene_name, transcript_type gene_type}
 
-\item{cell_info}{Data frame of cell metadata}
+\item{cell_info}{Data frame of cell type data}
 
 \item{n_hvg}{Number of highly variable genes to select}
 
