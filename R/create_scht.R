@@ -6,8 +6,8 @@
 #                                                            #
 #  Author: [Siyuan Wu & Ulf Schmitz]                         #
 #  Institution: [James Cook University]                      #
-#  Date: Jan 16, 2025                                        #
-#  Version: 1.0                                              #
+#  Date: Feb 4, 2025                                         #
+#  Version: 1.1.0                                            #
 ##############################################################
 
 # This script takes raw gene- and transcript-level count matrices,
@@ -38,8 +38,8 @@ NULL
 #'
 #' @param gene_counts Gene-level counts as matrix or data frame
 #' @param transcript_counts Transcript-level counts as matrix or data frame
-#' @param transcript_info Data frame with columns: transcript_id, transcript_name, gene_id, gene_name
-#' @param cell_info Data frame of cell metadata
+#' @param transcript_info Data frame with columns: transcript_id, transcript_name, gene_id, gene_name, transcript_type gene_type
+#' @param cell_info Data frame of cell type data
 #' @param n_hvg Number of highly variable genes to select
 #' @param qc_params List of quality control parameters:
 #'   \itemize{
@@ -881,6 +881,7 @@ create_scht <- function(gene_counts,
   gene_counts <- val_result$gene_counts
   transcript_counts <- val_result$transcript_counts
   
+  # Step 0: Input validation
   if (verbose) {
     message(sprintf("Input validation complete. 
                     Gene counts matrix: %d rows x %d cols. 

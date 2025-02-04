@@ -1,3 +1,10 @@
+##############################################################
+#  Author: [Siyuan Wu & Ulf Schmitz]                         #
+#  Institution: [James Cook University]                      #
+#  Date: Feb 4, 2025                                         #
+#  Version: 1.1.0                                            #
+##############################################################
+
 #' Plot and analyze genes per cell distribution
 #'
 #' @description
