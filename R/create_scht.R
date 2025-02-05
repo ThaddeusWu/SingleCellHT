@@ -645,7 +645,7 @@ summary.SCHT <- function(object, ...) {
 #' to cell stages. Performs filtering and organization of data for each stage.
 #'
 #' @param scht Original SCHT object
-#' @param cell_info Data frame containing cell metadata with stage information
+#' @param cell_info Optional data frame describing cells. Required if require_stage = TRUE
 #' @param qc_params List of quality control parameters
 #'
 #' @return A StageSCHT object containing:
@@ -826,7 +826,7 @@ summary.IntegratedSCHT <- function(object, ...) {
 #' @param gene_counts A matrix or data frame of gene-level raw counts
 #' @param transcript_counts A matrix or data frame of transcript-level raw counts
 #' @param transcript_info A data frame describing transcripts
-#' @param cell_info A data frame describing cells
+#' @param cell_info Optional data frame describing cells. Required if require_stage = TRUE
 #' @param n_hvg Number of highly variable genes (default: 1000)
 #' @param qc_params List of quality control parameters:
 #'   \itemize{
@@ -850,7 +850,7 @@ summary.IntegratedSCHT <- function(object, ...) {
 #' #   gene_counts = gene_counts,
 #' #   transcript_counts = transcript_counts,
 #' #   transcript_info = transcript_info,
-#' #   cell_info = cell_info,
+#' #   cell_info = NULL,
 #' #   n_hvg = 1000,
 #' #   min_genes_per_cell = 10,
 #' #   min_cells_per_gene = 0.05,
