@@ -8,7 +8,7 @@ create_scht(
   gene_counts,
   transcript_counts,
   transcript_info,
-  cell_info,
+  cell_info = NULL,
   n_hvg = 1000,
   qc_params = list(min_genes_per_cell = 200, max_genes_per_cell = 10000,
     min_cells_expressing = 0.02, min_expr = 1e-06),

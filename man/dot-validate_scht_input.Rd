@@ -8,7 +8,7 @@
   gene_counts,
   transcript_counts,
   transcript_info,
-  cell_info,
+  cell_info = NULL,
   n_hvg,
   qc_params = list(min_genes_per_cell = 200, max_genes_per_cell = 10000,
     min_cells_expressing = 0.02, min_expr = 1e-06),
@@ -22,7 +22,7 @@
 
 \item{transcript_info}{Data frame with columns: transcript_id, transcript_name, gene_id, gene_name, transcript_type gene_type}
 
-\item{cell_info}{Data frame of cell type data}
+\item{cell_info}{Optional data frame describing cells. Required if require_stage = TRUE}
 
 \item{n_hvg}{Number of highly variable genes to select}
 

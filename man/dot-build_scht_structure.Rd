@@ -8,7 +8,7 @@
   isoform_list,
   transcript_info,
   n_cells,
-  cell_info,
+  cell_info = NULL,
   min_expr,
   verbose = TRUE
 )
@@ -20,7 +20,7 @@
 
 \item{n_cells}{Total number of cells in the dataset}
 
-\item{cell_info}{Data frame containing cell metadata}
+\item{cell_info}{Optional data frame describing cells. Required if require_stage = TRUE}
 
 \item{min_expr}{Minimum expression threshold for filtering}
 
