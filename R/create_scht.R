@@ -6,8 +6,8 @@
 #                                                            #
 #  Author: [Siyuan Wu & Ulf Schmitz]                         #
 #  Institution: [James Cook University]                      #
-#  Date: Feb 4, 2025                                         #
-#  Version: 1.1.0                                            #
+#  Date: Feb 6, 2025                                         #
+#  Version: 1.1.1                                            #
 ##############################################################
 
 # This script takes raw gene- and transcript-level count matrices,
@@ -39,7 +39,7 @@ NULL
 #' @param gene_counts Gene-level counts as matrix or data frame
 #' @param transcript_counts Transcript-level counts as matrix or data frame
 #' @param transcript_info Data frame with columns: transcript_id, transcript_name, gene_id, gene_name, transcript_type gene_type
-#' @param cell_info Data frame of cell type data
+#' @param cell_info Optional data frame describing cells. Required if require_stage = TRUE
 #' @param n_hvg Number of highly variable genes to select
 #' @param qc_params List of quality control parameters:
 #'   \itemize{
@@ -60,7 +60,7 @@ NULL
 .validate_scht_input <- function(gene_counts,
                                  transcript_counts,
                                  transcript_info,
-                                 cell_info,
+                                 cell_info = NULL,
                                  n_hvg,
                                  qc_params = list(
                                    # Cell QC parameters
@@ -112,19 +112,28 @@ NULL
     stop("transcript_counts must be a 2-dimensional matrix")
   }
   
-  # Check transcript_info and cell_info
+  # Check transcript_info
   if (!is.data.frame(transcript_info)) {
     stop("'transcript_info' must be a data frame.")
   }
-  if (!is.data.frame(cell_info)) {
-    stop("'cell_info' must be a data frame.")
-  }
   
-  # Check for stage if required
-  if (require_stage && !"stage" %in% colnames(cell_info)) {
-    stop("'cell_info' must contain a 'stage' column if require_stage = TRUE.")
-  } else if (!require_stage && !"stage" %in% colnames(cell_info)) {
-    message("Warning: 'stage' column not found in cell_info. Proceeding without stage information.")
+  # Check cell_info if provided
+  if (!is.null(cell_info)) {
+    if (!is.data.frame(cell_info)) {
+      stop("When provided, 'cell_info' must be a data frame.")
+    }
+    
+    # Check for stage information
+    if (require_stage && !"stage" %in% colnames(cell_info)) {
+      stop("'cell_info' must contain a 'stage' column if require_stage = TRUE.")
+    } else if (!require_stage && "stage" %in% colnames(cell_info)) {
+      message("Found 'stage' column in cell_info but require_stage = FALSE. Stage information will not be used.")
+    }
+  } else {
+    # cell_info is NULL
+    if (require_stage) {
+      stop("cell_info must be provided when require_stage = TRUE.")
+    }
   }
   
   # Check transcript_info for necessary columns
@@ -515,7 +524,7 @@ NULL
 #' @param isoform_list List of gene-wise isoform expression matrices
 #' @param transcript_info Data frame with transcript annotations
 #' @param n_cells Total number of cells in the dataset
-#' @param cell_info Data frame containing cell metadata
+#' @param cell_info Optional data frame describing cells. Required if require_stage = TRUE
 #' @param min_expr Minimum expression threshold for filtering
 #' @param verbose Logical, whether to display progress messages
 #'
@@ -531,7 +540,7 @@ NULL
 .build_scht_structure <- function(isoform_list,
                                   transcript_info,
                                   n_cells,
-                                  cell_info,
+                                  cell_info = NULL,
                                   min_expr,
                                   verbose = TRUE) {
  
@@ -856,7 +865,7 @@ summary.IntegratedSCHT <- function(object, ...) {
 create_scht <- function(gene_counts,
                         transcript_counts,
                         transcript_info,
-                        cell_info,
+                        cell_info = NULL,
                         n_hvg = 1000,
                         qc_params = list(
                           min_genes_per_cell = 200,       
@@ -991,7 +1000,7 @@ create_scht <- function(gene_counts,
   )
   
   # Step 9: Build Stage-Specific SCHT structure (optional)
-  if (require_stage) {
+  if (require_stage && !is.null(cell_info)) {
     if (verbose) message("Step 9: Generating stage-specific SCHT structures...")
     stage_result <- .generate_stage_scht(scht_obj, 
                                          cell_info, 
@@ -999,7 +1008,7 @@ create_scht <- function(gene_counts,
   }
   
   # Step 10: Build Integrated SCHT structure (optional)
-  if (require_stage) {
+  if (require_stage && !is.null(cell_info)) {
     if (verbose) message("Step 10: Integrating stage-specific SCHT structures...")
     scht_obj<- .generate_integrated_result(scht_obj, stage_result)
   }
