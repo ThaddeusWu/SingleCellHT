@@ -1,7 +1,7 @@
 Package: SingleCellHT
 Title: Single-Cell Hierarchical Tensor (SCHT) Creation Pipeline in R
-Version: 1.1.0
-Date: 2025-01-17
+Version: 1.1.1
+Date: 2025-02-06
 Authors@R: c(
     person("Siyuan", "Wu", email = "thaddeus.wu@jcu.edu.au", role = c("aut", "cre")),
     person("Ulf", "Schmitz", role = "aut"))
