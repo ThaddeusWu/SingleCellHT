@@ -670,7 +670,7 @@ summary.SCHT <- function(object, ...) {
   
   for (current_stage in stages) {
     # Get cells for current stage
-    stage_cells <- rownames(cell_info)[cell_info$stage == current_stage]
+    stage_cells <- cell_info[,1][cell_info$stage == current_stage]
     stage_matrices <- list()
     
     # Record initial stats for this stage
