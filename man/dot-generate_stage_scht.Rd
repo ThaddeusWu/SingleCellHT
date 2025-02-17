@@ -9,7 +9,7 @@
 \arguments{
 \item{scht}{Original SCHT object}
 
-\item{cell_info}{Data frame containing cell metadata with stage information}
+\item{cell_info}{Optional data frame describing cells. Required if require_stage = TRUE}
 
 \item{qc_params}{List of quality control parameters}
 }

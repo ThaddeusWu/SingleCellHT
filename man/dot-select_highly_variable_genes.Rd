@@ -4,15 +4,10 @@
 \alias{.select_highly_variable_genes}
 \title{Select highly variable genes with progress tracking}
 \usage{
-.select_highly_variable_genes(
-  gene_mat_census,
-  n_hvg,
-  qc_params,
-  verbose = TRUE
-)
+.select_highly_variable_genes(gene_mat, n_hvg, qc_params, verbose = TRUE)
 }
 \arguments{
-\item{gene_mat_census}{Census-normalized gene expression matrix}
+\item{gene_mat}{Normalized gene expression matrix}
 
 \item{n_hvg}{Number of highly variable genes to select}
 

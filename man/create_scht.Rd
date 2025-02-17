@@ -13,8 +13,7 @@ create_scht(
   qc_params = list(min_genes_per_cell = 200, max_genes_per_cell = 10000,
     min_cells_expressing = 0.02, min_expr = 1e-06),
   require_stage = FALSE,
-  verbose = TRUE,
-  enable_census = TRUE
+  verbose = TRUE
 )
 }
 \arguments{
@@ -24,7 +23,7 @@ create_scht(
 
 \item{transcript_info}{A data frame describing transcripts}
 
-\item{cell_info}{A data frame describing cells}
+\item{cell_info}{Optional data frame describing cells. Required if require_stage = TRUE}
 
 \item{n_hvg}{Number of highly variable genes (default: 1000)}
 
@@ -39,8 +38,6 @@ create_scht(
 \item{require_stage}{Logical, whether stage information is required}
 
 \item{verbose}{Logical, whether to show progress messages}
-
-\item{enable_census}{Logical, whether to perform census normalization}
 }
 \value{
 A SCHT object
@@ -57,14 +54,13 @@ count matrices.
 #   gene_counts = gene_counts,
 #   transcript_counts = transcript_counts,
 #   transcript_info = transcript_info,
-#   cell_info = cell_info,
+#   cell_info = NULL,
 #   n_hvg = 1000,
 #   min_genes_per_cell = 10,
 #   min_cells_per_gene = 0.05,
 #   min_expr = 1e-6,
 #   require_stage = FALSE,
-#   verbose = TRUE,
-#   enable_census = TRUE
+#   verbose = TRUE
 # )
 #
 # print(scht_obj)
