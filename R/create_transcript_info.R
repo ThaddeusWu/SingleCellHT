@@ -1,8 +1,8 @@
 ##############################################################
 #  Author: [Siyuan Wu & Ulf Schmitz]                         #
 #  Institution: [James Cook University]                      #
-#  Date: Feb 4, 2025                                         #
-#  Version: 1.1.0                                            #
+#  Date: Feb 17, 2025                                         #
+#  Version: 1.2.0                                            #
 ##############################################################
 
 #' Create transcript information data frame from GTF file

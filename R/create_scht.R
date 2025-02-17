@@ -6,8 +6,8 @@
 #                                                            #
 #  Author: [Siyuan Wu & Ulf Schmitz]                         #
 #  Institution: [James Cook University]                      #
-#  Date: Feb 6, 2025                                         #
-#  Version: 1.1.1                                            #
+#  Date: Feb 17, 2025                                         #
+#  Version: 1.2.0                                           #
 ##############################################################
 
 # This script takes raw gene- and transcript-level count matrices,
@@ -313,42 +313,6 @@ NULL
 }
 
 
-#' Perform census normalisation
-#'
-#' @description
-#' Performs census normalization by adjusting expression values based on
-#' the number of detected genes in each cell. This helps to account for
-#' differences in cellular RNA content.
-#'
-#' @param gene_mat Log-transformed gene expression matrix
-#' @param transcript_mat Log-transformed transcript expression matrix
-#'
-#' @return A list containing:
-#'   \itemize{
-#'     \item gene_mat_census: Census-normalized gene expression matrix
-#'     \item transcript_mat_census: Census-normalized transcript expression matrix
-#'   }
-#'
-#' @keywords internal
-#' Further adjusts for coverage differences by re-scaling 
-#' based on the number of detected genes in each cell.
-.perform_census_norm <- function(gene_mat, transcript_mat) {
-  counts_genes <- colSums(gene_mat > 0)
-  
-  census_normalise <- function(mat, counts) {
-    xnl <- 2^mat - 1  # revert log transform
-    total_expr <- colSums(xnl)
-    rnorm <- t(t(xnl) * counts / total_expr)
-    log2(rnorm + 1)
-  }
-  
-  list(
-    gene_mat_census = census_normalise(gene_mat, counts_genes),
-    transcript_mat_census = census_normalise(transcript_mat, counts_genes)
-  )
-}
-
-
 #' Select highly variable genes with progress tracking
 #'
 #' @description
@@ -356,7 +320,7 @@ NULL
 #' (variance/mean ratio). Includes progress bar visualization for monitoring
 #' the computation progress.
 #'
-#' @param gene_mat_census Census-normalized gene expression matrix
+#' @param gene_mat Normalized gene expression matrix
 #' @param n_hvg Number of highly variable genes to select
 #' @param qc_params List containing min_cells_expressing threshold
 #' @param verbose Logical, whether to display progress messages
@@ -370,14 +334,14 @@ NULL
 #'
 #' @keywords internal
 #' Uses variance/mean as a dispersion measure; picks top 'n_hvg' genes.
-.select_highly_variable_genes <- function(gene_mat_census,
+.select_highly_variable_genes <- function(gene_mat,
                                           n_hvg,
                                           qc_params,
                                           verbose = TRUE) {
   # Filter by minimum fraction of cells
-  min_cells <- qc_params$min_cells_expressing * ncol(gene_mat_census)
-  keep_genes <- rowSums(gene_mat_census > 0) >= min_cells
-  gene_mat_filtered <- gene_mat_census[keep_genes, , drop = FALSE]
+  min_cells <- qc_params$min_cells_expressing * ncol(gene_mat)
+  keep_genes <- rowSums(gene_mat > 0) >= min_cells
+  gene_mat_filtered <- gene_mat[keep_genes, , drop = FALSE]
   
   if (verbose) {
     message("Selecting top highly variable genes (HVGs)...")
@@ -837,7 +801,6 @@ summary.IntegratedSCHT <- function(object, ...) {
 #'   }
 #' @param require_stage Logical, whether stage information is required
 #' @param verbose Logical, whether to show progress messages
-#' @param enable_census Logical, whether to perform census normalization
 #'
 #' @return A SCHT object
 #' @export
@@ -856,8 +819,7 @@ summary.IntegratedSCHT <- function(object, ...) {
 #' #   min_cells_per_gene = 0.05,
 #' #   min_expr = 1e-6,
 #' #   require_stage = FALSE,
-#' #   verbose = TRUE,
-#' #   enable_census = TRUE
+#' #   verbose = TRUE
 #' # )
 #' #
 #' # print(scht_obj)
@@ -873,8 +835,7 @@ create_scht <- function(gene_counts,
                           min_cells_expressing = 0.02,   
                           min_expr = 1e-6),
                         require_stage = FALSE,
-                        verbose = TRUE,
-                        enable_census = TRUE) {
+                        verbose = TRUE) {
   
   # Step 0: Validate inputs
   if (verbose) message("Step 0: Validating inputs...")
@@ -930,24 +891,11 @@ create_scht <- function(gene_counts,
     norm_result$gene_counts_norm,
     norm_result$transcript_counts_norm
   )
+  gene_mat_final <- log_result$gene_mat
+  transcript_mat_final <- log_result$transcript_mat
   
-  # Step 5: Census normalisation (optional)
-  if (enable_census) {
-    if (verbose) message("Step 5: Performing census normalisation...")
-    census_result <- .perform_census_norm(
-      log_result$gene_mat,
-      log_result$transcript_mat
-    )
-    gene_mat_final <- census_result$gene_mat_census
-    transcript_mat_final <- census_result$transcript_mat_census
-  } else {
-    if (verbose) message("Step 5: Skipping census normalisation...")
-    gene_mat_final <- log_result$gene_mat
-    transcript_mat_final <- log_result$transcript_mat
-  }
-  
-  # Step 6: Select highly variable genes
-  if (verbose) message("Step 6: Selecting highly variable genes...")
+  # Step 5: Select highly variable genes
+  if (verbose) message("Step 5: Selecting highly variable genes...")
   hvg_result <- .select_highly_variable_genes(
     gene_mat_final,
     n_hvg = n_hvg,
@@ -955,8 +903,8 @@ create_scht <- function(gene_counts,
     verbose = verbose
   )
   
-  # Step 7: Create isoform matrix
-  if (verbose) message("Step 7: Creating isoform matrix for HVGs...")
+  # Step 6: Create isoform matrix
+  if (verbose) message("Step 6: Creating isoform matrix for HVGs...")
   isoform_result <- .create_SCHT(
     transcript_mat_final,
     hvg_result$var_genes,
@@ -964,8 +912,8 @@ create_scht <- function(gene_counts,
     verbose = verbose
   )
   
-  # Step 8: Build final SCHT structure
-  if (verbose) message("Step 8: Building the final SCHT structure...")
+  # Step 7: Build final SCHT structure
+  if (verbose) message("Step 7: Building the final SCHT structure...")
   scht_obj <- .build_scht_structure(
     isoform_result$SCHT,
     qc_result$transcript_info_filtered,
@@ -994,22 +942,21 @@ create_scht <- function(gene_counts,
       min_cells_per_gene = qc_params$min_cells_per_gene,
       min_expr = qc_params$min_expr,
       require_stage = require_stage,
-      verbose = verbose,
-      enable_census = enable_census
+      verbose = verbose
     )
   )
   
-  # Step 9: Build Stage-Specific SCHT structure (optional)
+  # Step 8: Build Stage-Specific SCHT structure (optional)
   if (require_stage && !is.null(cell_info)) {
-    if (verbose) message("Step 9: Generating stage-specific SCHT structures...")
+    if (verbose) message("Step 8: Generating stage-specific SCHT structures...")
     stage_result <- .generate_stage_scht(scht_obj, 
                                          cell_info, 
                                          qc_params)
   }
   
-  # Step 10: Build Integrated SCHT structure (optional)
+  # Step 9: Build Integrated SCHT structure (optional)
   if (require_stage && !is.null(cell_info)) {
-    if (verbose) message("Step 10: Integrating stage-specific SCHT structures...")
+    if (verbose) message("Step 9: Integrating stage-specific SCHT structures...")
     scht_obj<- .generate_integrated_result(scht_obj, stage_result)
   }
   
