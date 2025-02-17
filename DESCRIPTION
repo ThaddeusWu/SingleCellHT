@@ -1,7 +1,7 @@
 Package: SingleCellHT
 Title: Single-Cell Hierarchical Tensor (SCHT) Creation Pipeline in R
-Version: 1.1.1
-Date: 2025-02-06
+Version: 1.2.0
+Date: 2025-02-17
 Authors@R: c(
     person("Siyuan", "Wu", email = "thaddeus.wu@jcu.edu.au", role = c("aut", "cre")),
     person("Ulf", "Schmitz", role = "aut"))
@@ -14,10 +14,12 @@ Imports:
     stats,
     graphics,
     rtracklayer,
-    tools
+    tools,
+    data.table
 Collate: create_scht.R
 	qc_utils.R
 	create_transcript_info.R
+	generate_gene_counts.R
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
