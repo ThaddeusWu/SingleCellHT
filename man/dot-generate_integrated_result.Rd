@@ -14,7 +14,7 @@
 \value{
 An IntegratedSCHT object containing:
 \itemize{
-\item Original_Results: Original SCHT object
+\item original_results: Original SCHT object
 \item stage_matrices: Stage-specific matrices
 \item Additional metadata and statistics
 }
