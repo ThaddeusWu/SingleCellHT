@@ -508,7 +508,7 @@ NULL
                                   min_expr,
                                   verbose = TRUE) {
  
-  scht <- list(orginal_results = isoform_list)
+  scht <- list(original_results = isoform_list)
 
   # Attach metadata
   attr(scht, "creation_date") <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
@@ -516,12 +516,12 @@ NULL
   attr(scht, "cell_info") <- cell_info
   
   # Compute basic statistics
-  if (length(scht$orginal_results) > 0) {
+  if (length(scht$original_results) > 0) {
     n_cells <- n_cells
-    n_genes <- length(scht$orginal_results)
-    total_transcripts <- sum(sapply(scht$orginal_results, nrow))
-    mean_isoforms <- mean(sapply(scht$orginal_results, nrow))
-    sparsity <- mean(sapply(scht$orginal_results, function(x) mean(x == 0)))
+    n_genes <- length(scht$original_results)
+    total_transcripts <- sum(sapply(scht$original_results, nrow))
+    mean_isoforms <- mean(sapply(scht$original_results, nrow))
+    sparsity <- mean(sapply(scht$original_results, function(x) mean(x == 0)))
   } else {
     n_cells <- 0
     n_genes <- 0
@@ -641,8 +641,8 @@ summary.SCHT <- function(object, ...) {
     initial_cells <- length(stage_cells)
     
     # Process each gene
-    for (gene_name in names(scht$orginal_results)) {
-      original_mat <- scht$orginal_results[[gene_name]]
+    for (gene_name in names(scht$original_results)) {
+      original_mat <- scht$original_results[[gene_name]]
       # Only select cells from current stage
       stage_mat <- original_mat[, colnames(original_mat) %in% stage_cells, drop = FALSE]
       
@@ -704,7 +704,7 @@ summary.SCHT <- function(object, ...) {
 .generate_integrated_result <- function(scht_obj, stage_result) {
   # Create basic structure
   final_result <- list(
-    original_results = scht_obj,
+    original_results = scht_obj$original_results,
     stage_matrices = stage_result$stage_matrices
   )
   
